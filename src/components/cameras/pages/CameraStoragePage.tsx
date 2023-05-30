@@ -1,4 +1,5 @@
 import { Drive } from "../CameraInfo"
+import { StorageList } from "../StorageList"
 
 
 type Props = {
@@ -6,8 +7,10 @@ type Props = {
 }
 
 export function CameraStoragePage(props: Props) {
-
+  console.log(props.storage)
   return (
-    <div>{props.storage.length}</div>
+    <StorageList storage={props.storage} />
   )
 }
+
+
