@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: theme('colors.stone.950');
+  color: theme('colors.stone.100');
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+ 
+::-webkit-scrollbar-track {
+
+    box-shadow: inset 0 0 10px 10px transparent;
+    border: solid 3px transparent;
+}
+
+ 
+::-webkit-scrollbar-thumb {
+  border-radius: theme('borderRadius.full');
+    box-shadow: inset 0 0 10px 10px theme('colors.stone.500');
+    border: solid 3px transparent;
+
+}
