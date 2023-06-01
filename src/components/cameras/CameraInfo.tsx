@@ -57,6 +57,8 @@ export type Drive = {
 
 export function CameraInfo(props: Props) {
 
+  const [usersLoaded, setUsersLoaded] = useState(false);
+  const [storageLoaded, setStorageLoaded] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
   const [storage, setStorage] = useState<Drive[]>([]);
   const subpage = useParams();
@@ -87,6 +89,8 @@ export function CameraInfo(props: Props) {
 
 
   useEffect(() => {
+    setUsersLoaded(false)
+    setStorageLoaded(false)
     getUsers().then(res => {
       const users = res.UserConfig.Users.User;
       let output: User[];
@@ -95,10 +99,12 @@ export function CameraInfo(props: Props) {
       else
         output = users;
       setUsers(output)
+      setUsersLoaded(true)
     })
     getStorage().then(res => {
       let drives: Drive[] = res;
       setStorage(drives);
+      setStorageLoaded(true)
     });
 
   }, [props.camera]);
@@ -116,16 +122,24 @@ export function CameraInfo(props: Props) {
         <CamerNavButton text="Info" page="info" />
         <CamerNavButton text="Users" page="users" />
         <CamerNavButton text="Storage" page="storage" />
+        <CamerNavButton text="Cameras" page="cameras" />
       </CameraNav>
-      {subpage?.subpage ? (
+
+
+      {(usersLoaded && storageLoaded) ? (
         <>
-          {subpage.subpage == "info" && (<CameraInfoPage />)}
-          {subpage.subpage == "users" && (<CameraUsersPage users={users} />)}
-          {subpage.subpage == "storage" && (<CameraStoragePage storage={storage} />)}
+          {subpage?.subpage ? (
+            <>
+              {subpage.subpage == "info" && (<CameraInfoPage users={users} storage={storage} />)}
+              {subpage.subpage == "users" && (<CameraUsersPage users={users} />)}
+              {subpage.subpage == "storage" && (<CameraStoragePage storage={storage} />)}
+              {subpage.subpage == "cameras" && (<CameraStoragePage storage={storage} />)}
+            </>
+          ) : (
+            <div><CameraInfoPage users={users} storage={storage} /></div>
+          )}
         </>
-      ) : (
-        <div><CameraInfoPage /></div>
-      )}
+      ) : "Loading..."}
     </>
   )
 

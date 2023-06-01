@@ -24,7 +24,7 @@ export function StorageList(props: Props) {
 
   return (
     <>
-      {props.storage.map((drive: Drive) => {
+      {props.storage.map((drive: Drive, i: number) => {
         const avail: number = parseFloat(drive.AvailSize._text);
         const total: number = parseFloat(drive.TotalSize._text);
         const used: number = total - avail;
@@ -37,8 +37,8 @@ export function StorageList(props: Props) {
         const col = getColour(percentage);
 
         return (
-          <div className="bg-stone-900 mb-5 px-5 py-3 rounded">
-            <div className="flex">
+          <div className="bg-stone-900 mb-5 px-5 py-3 rounded" key={i}>
+            <div className="flex mb-2">
               <span className="flex-grow">{drive.CodeName._text}\</span>
               <span>{usedSize}{usedLabel} / {totalSize}{totalLabel}</span>
             </div>
