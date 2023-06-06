@@ -4,6 +4,7 @@ import { CameraNav } from "./nav";
 import { CamerNavButton } from "./nav/CameraNavButton";
 import { CameraInfoPage } from "./pages/CameraInfoPage";
 import { CameraUsersPage } from "./pages/CameraUsersPage";
+import { CameraListPage } from "./pages/CameraListPage";
 import { useNavigate, useParams } from "react-router-dom";
 import { CameraStoragePage } from "./pages/CameraStoragePage";
 
@@ -55,12 +56,27 @@ export type Drive = {
 }
 
 
+type DeviceResponse = {
+  DeviceConfig: {
+    Devices: {
+      Device: Device[]
+    }
+  }
+}
+
+export type Device = {
+  id: String,
+}
+
+
 export function CameraInfo(props: Props) {
 
   const [usersLoaded, setUsersLoaded] = useState(false);
   const [storageLoaded, setStorageLoaded] = useState(false);
+  const [devicesLoaded, setDevicesLoaded] = useState(false)
   const [users, setUsers] = useState<User[]>([]);
   const [storage, setStorage] = useState<Drive[]>([]);
+  const [devices, setDevices] = useState<Device[]>([]);
   const subpage = useParams();
 
   const getUsers = async (): Promise<UserResponse> => {
@@ -87,10 +103,21 @@ export function CameraInfo(props: Props) {
     return drives.Drives.Drive;
   }
 
+  const getDevices = async (): Promise<Device[]> => {
+    const resp = await fetch(`http://${props.camera}/Media/Device/getDevice?response_format=json`, {
+      headers: {
+        "Authorization": "Basic YWRtaW46MTIzNDU2"
+      }
+    })
+    const json: DeviceResponse = await resp.json();
+    return json.DeviceConfig.Devices.Device;
+  }
+
 
   useEffect(() => {
     setUsersLoaded(false)
     setStorageLoaded(false)
+    setDevicesLoaded(false)
     getUsers().then(res => {
       const users = res.UserConfig.Users.User;
       let output: User[];
@@ -106,6 +133,11 @@ export function CameraInfo(props: Props) {
       setStorage(drives);
       setStorageLoaded(true)
     });
+    getDevices().then(res => {
+      let devices: Device[] = res;
+      setDevices(devices)
+      setDevicesLoaded(true)
+    })
 
   }, [props.camera]);
 
@@ -133,7 +165,7 @@ export function CameraInfo(props: Props) {
               {subpage.subpage == "info" && (<CameraInfoPage users={users} storage={storage} />)}
               {subpage.subpage == "users" && (<CameraUsersPage users={users} />)}
               {subpage.subpage == "storage" && (<CameraStoragePage storage={storage} />)}
-              {subpage.subpage == "cameras" && (<CameraStoragePage storage={storage} />)}
+              {subpage.subpage == "cameras" && (<CameraListPage devices={devices} />)}
             </>
           ) : (
             <div><CameraInfoPage users={users} storage={storage} /></div>
