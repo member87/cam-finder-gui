@@ -24,15 +24,13 @@
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@types/jmuxer": "^2.0.3",
-    "broadwayjs": "^0.0.2",
     "electron-router-dom": "^1.0.5",
     "electron-updater": "^5.3.0",
     "express": "^4.18.2",
-    "express-http-proxy": "^1.6.3",
+    "fetch-h2": "^3.0.2",
     "jmuxer": "^2.0.5",
     "react-router-dom": "^6.11.1",
     "sqlite3": "^5.1.6",
-    "strip-ansi": "^7.0.1",
     "xml-js": "^1.6.11"
   },
   "devDependencies": {
@@ -55,5 +53,6 @@
   },
   "engines": {
     "node": "^14.18.0 || >=16.0.0"
-  }
+  },
+  "packageManager": "yarn@3.6.0"
 }

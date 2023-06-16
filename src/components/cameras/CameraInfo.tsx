@@ -65,7 +65,8 @@ type DeviceResponse = {
 }
 
 export type Device = {
-  id: String,
+  id: string,
+  Name: string
 }
 
 
@@ -165,7 +166,7 @@ export function CameraInfo(props: Props) {
               {subpage.subpage == "info" && (<CameraInfoPage users={users} storage={storage} />)}
               {subpage.subpage == "users" && (<CameraUsersPage users={users} />)}
               {subpage.subpage == "storage" && (<CameraStoragePage storage={storage} />)}
-              {subpage.subpage == "cameras" && (<CameraListPage devices={devices} />)}
+              {subpage.subpage == "cameras" && (<CameraListPage devices={devices} ip={props.camera} />)}
             </>
           ) : (
             <div><CameraInfoPage users={users} storage={storage} /></div>

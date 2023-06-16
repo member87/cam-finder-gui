@@ -5,7 +5,6 @@ import { createFileRoute, createURLRoute } from 'electron-router-dom'
 import { Generate } from './generate/Generate'
 import { DatabaseQuery } from './listeners/DatabaseQuery'
 import { Database } from './utils/Database'
-const proxy = require('express-http-proxy');
 const express = require('express')
 const a = express()
 const port = 3000
@@ -103,25 +102,13 @@ async function createWindow() {
   Database.loadDatabase()
   DatabaseQuery.createAllListeners();
 
-  a.use('/', proxy('76.191.116.34:80', {
-    https: false,
-    proxyReqOptDecorator: function(proxyReqOpts: any, srcReq: any) {
-      console.log(proxyReqOpts)
-      proxyReqOpts.headers['Authorization'] = 'Basic YWRtaW46MTIzNDU2';
-      proxyReqOpts.headers['Connection'] = 'keep-alive';
-      return proxyReqOpts;
-    },
-    proxyReqBodyDecorator: function(bodyContent, srcReq) {
-      return '';
-    }
-  }));
-
   a.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
   })
 
 
 }
+
 
 app.whenReady().then(createWindow)
 
